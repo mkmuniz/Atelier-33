@@ -65,8 +65,10 @@ set(TARGET PictoOptimizer)
 file(GLOB_RECURSE MOD_SOURCES CONFIGURE_DEPENDS "src/*.cpp")
 add_library(${TARGET} SHARED ${MOD_SOURCES})
 
-# Nome do arquivo: dinput8 para o modo proxy. Com injetor, o nome é irrelevante.
-set_target_properties(${TARGET} PROPERTIES OUTPUT_NAME "dinput8")
+# Nome do arquivo: version para o modo proxy. O Repertoire 33 usa dinput8, e
+# dois mods nao podem ser o mesmo arquivo na mesma pasta. Com injetor, o nome e
+# irrelevante.
+set_target_properties(${TARGET} PROPERTIES OUTPUT_NAME "version")
 
 target_include_directories(${TARGET} PRIVATE src)
 target_compile_definitions(${TARGET} PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE)
@@ -85,7 +87,9 @@ endif()
 # Monta a árvore que o usuário extrai. Empacotar por install/CPack em vez de
 # script solto mantém a lista num lugar só: esquecer data/ ou a fonte gera um
 # mod que abre e não funciona.
-install(TARGETS ${TARGET} RUNTIME DESTINATION "Atelier33")
+# A DLL na raiz do zip e o resto na subpasta: extrair tudo em Win64/ deixa a
+# DLL ao lado do executavel e os arquivos do mod separados.
+install(TARGETS ${TARGET} RUNTIME DESTINATION ".")
 # data/ tem uma subpasta por versao do jogo; sem ela o otimizador nao degrada,
 # ele erra.
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/data/" DESTINATION "Atelier33/data")

@@ -1,8 +1,8 @@
 # E33 Picto Optimizer
 
 In-game overlay for **Clair Obscur: Expedition 33**: reads your live build and
-searches for a better picto and lumina combination. UE4SS C++ mod with a
-draggable ImGui window.
+searches for a better picto and lumina combination. Self-loading C++ mod with a draggable
+ImGui window. No mod loader required.
 
 ![The overlay](docs/images/overlay.png)
 
@@ -36,33 +36,50 @@ one you are looking at.
 
 ## Installation
 
-**Requires** UE4SS in `Expedition 33\Sandfall\Binaries\Win64\`.
+No UE4SS needed — this mod loads itself. Grab `Atelier33.zip` from
+[Releases](../../releases), or from the artifacts of the latest
+[CI run](../../actions).
 
-> **No release yet, and not for a reason in this repository.** Building any
-> UE4SS C++ mod requires `Re-UE4SS/UEPseudo`, a **private** repository that
-> RE-UE4SS needs as a submodule, and no SDK is published to link against
-> instead. See [docs/BUILD-BLOCKER.md](docs/BUILD-BLOCKER.md) for what was
-> checked and what the options are.
+1. In Steam: right-click the game → Manage → **Browse local files**, then open
+   `Sandfall\Binaries\Win64\`. That folder holds the game executable.
+2. Extract the whole zip **into that folder**. You end up with:
 
-1. Extract `PictoOptimizer` to
-   `Expedition 33\Sandfall\Binaries\Win64\ue4ss\Mods\PictoOptimizer\`
-2. Add a `PictoOptimizer : 1` line to `ue4ss\Mods\mods.txt`. The bundled
-   `enabled.txt` also works, but it bypasses mods.txt and gives up load ordering.
-3. Start the game and press **F8**.
+   ```
+   Win64\
+   ├── version.dll          <- next to the executable, on purpose
+   └── Atelier33\
+       ├── data\
+       ├── assets\
+       └── config.json
+   ```
 
-`J` is avoided on purpose — Gramophone Everywhere uses it.
+3. Start the game and press **F8**. The damage coefficients are not calibrated yet — see above.
+
+`version.dll` is a proxy: Windows loads it instead of the system copy, and every call
+is passed straight through. The two mods in this pair use different proxy names
+(version.dll here), so they can sit in the same folder. If you would rather not
+replace a system DLL name, any DLL injector loads the same file unchanged.
+
+To uninstall, delete `version.dll` and the `Atelier33` folder.
 
 ## Building
 
-The mod DLL is CMake, built alongside RE-UE4SS — that is the flow UE4SS
-supports, and there is no import library to link against from outside:
+Every dependency is public, so the DLL builds with no account, token or private
+checkout — that was not true of the UE4SS route, see
+[docs/BUILD-BLOCKER.md](docs/BUILD-BLOCKER.md):
 
 ```sh
-# needs access to the private Re-UE4SS/UEPseudo submodule
-git clone --recursive https://github.com/UE4SS-RE/RE-UE4SS external/RE-UE4SS
-cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Game__Shipping__Win64
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release   # Windows/MSVC
 cmake --build build
-cmake --build build --target package   # the installable zip
+cmake --build build --target package                 # the installable zip
+```
+
+Before pushing Windows code from a Mac or Linux box, syntax-check it without
+waiting on CI:
+
+```sh
+brew install mingw-w64       # or: apt install g++-mingw-w64-x86-64
+./tools/check-windows.sh
 ```
 
 Everything else builds anywhere, which is how the project is developed

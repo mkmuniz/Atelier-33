@@ -91,3 +91,4 @@ target("harness")
     if is_plat("macosx") then
         add_frameworks("OpenGL", "Cocoa", "IOKit", "CoreVideo")
     end
+

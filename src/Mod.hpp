@@ -1,12 +1,14 @@
 #pragma once
 
+#include <memory>
+
 #include <Mod/CppUserModBase.hpp>
+
+#include "Core/AppController.hpp"
+#include "UI/OverlayState.hpp"
 
 namespace e33
 {
-// Regra de camadas (ver docs/plano.md): Calc/ não sabe o que é ImGui e UI/ não
-// sabe o que é ponteiro de objeto do Unreal. Quando um patch quebrar o mod, o
-// estrago fica em Game/.
 class PictoOptimizerMod final : public RC::CppUserModBase
 {
 public:
@@ -17,6 +19,11 @@ public:
     void on_update() override;
 
 private:
-    bool m_overlay_open{false};
+    void render();
+    void poll_hotkey();
+
+    std::unique_ptr<AppController> m_app;
+    ui::OverlayState m_overlay{};
+    bool m_hotkey_was_down{false};
 };
 } // namespace e33

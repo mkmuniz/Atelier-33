@@ -4,6 +4,8 @@
 
 #include <imgui.h>
 
+#include "UI/Theme.hpp"
+
 namespace e33::ui
 {
 void draw_settings_panel(AppController& app, OverlayState& state)
@@ -31,20 +33,20 @@ void draw_settings_panel(AppController& app, OverlayState& state)
         static_cast<void>(settings.save());
     }
 
-    if (ImGui::Checkbox("Modo compacto (so o numero)", &settings.compact_mode))
+    if (theme::checkbox("Modo compacto (so o numero)", &settings.compact_mode))
     {
         static_cast<void>(settings.save());
     }
-    if (ImGui::Checkbox("Abrir o overlay ao iniciar", &settings.start_open))
+    if (theme::checkbox("Abrir o overlay ao iniciar", &settings.start_open))
     {
         static_cast<void>(settings.save());
     }
-    if (ImGui::Checkbox("Log verboso", &settings.verbose_log))
+    if (theme::checkbox("Log verboso", &settings.verbose_log))
     {
         static_cast<void>(settings.save());
     }
 
-    ImGui::Separator();
+    theme::rule();
     ImGui::Text("Dados: versao %s", app.data().version().c_str());
     ImGui::TextDisabled("%zu pictos, %zu luminas, %zu skills, %zu inimigos",
                         app.data().pictos().size(), app.data().luminas().size(),
@@ -52,12 +54,12 @@ void draw_settings_panel(AppController& app, OverlayState& state)
 
     // A taxa de erro da formula e o que separa "ferramenta" de "chute
     // bem-apresentado". Enquanto nao houver fixtures medidas, dizer isso.
-    ImGui::Separator();
+    theme::rule();
     ImGui::TextWrapped("Coeficientes da formula: escala %.3f, expoente de ataque %.3f, "
                        "critico base x%.2f.",
                        app.coefficients().global_scale, app.coefficients().attack_exponent,
                        app.coefficients().crit_base);
-    ImGui::TextColored(ImVec4{1.0f, 0.75f, 0.3f, 1.0f},
+    ImGui::TextColored(theme::color::kGold,
                        "Ainda nao calibrados contra dano medido em jogo (M4).");
 
     static_cast<void>(state);

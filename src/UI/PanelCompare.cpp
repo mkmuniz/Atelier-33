@@ -2,6 +2,8 @@
 
 #include <imgui.h>
 
+#include "UI/Theme.hpp"
+
 namespace e33::ui
 {
 void draw_compare_panel(AppController& app, OverlayState& state)
@@ -21,22 +23,22 @@ void draw_compare_panel(AppController& app, OverlayState& state)
     ImGui::SameLine();
     ImGui::Text("-> Sugerida: %.0f", diff.suggested_damage);
     ImGui::SameLine();
-    ImGui::TextColored(diff.delta() >= 0.0 ? ImVec4{0.55f, 0.85f, 0.6f, 1.0f}
-                                           : ImVec4{1.0f, 0.55f, 0.55f, 1.0f},
+    ImGui::TextColored(diff.delta() >= 0.0 ? theme::color::kVerdigris
+                                           : theme::color::kBlood,
                        "(%+.1f%%)", diff.delta_percent());
 
-    ImGui::Separator();
+    theme::rule();
 
     if (diff.empty())
     {
-        ImGui::TextColored(ImVec4{0.55f, 0.85f, 0.6f, 1.0f},
+        ImGui::TextColored(theme::color::kVerdigris,
                            "Sua build ja e essa. Nada a trocar.");
         return;
     }
 
     // A lista exata do que trocar e o produto final: o numero sozinho nao diz
     // ao usuario o que fazer quando ele voltar para o menu do jogo.
-    ImGui::TextUnformatted("Equipar:");
+    theme::heading("Equipar");
     for (const auto* picto : diff.add_pictos)
     {
         ImGui::BulletText("picto %s", picto->name.c_str());
@@ -50,7 +52,7 @@ void draw_compare_panel(AppController& app, OverlayState& state)
         ImGui::TextDisabled("  (nada)");
     }
 
-    ImGui::TextUnformatted("Remover:");
+    theme::heading("Remover");
     for (const auto* picto : diff.remove_pictos)
     {
         ImGui::BulletText("picto %s", picto->name.c_str());

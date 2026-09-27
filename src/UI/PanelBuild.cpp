@@ -2,6 +2,8 @@
 
 #include <imgui.h>
 
+#include "UI/Theme.hpp"
+
 namespace e33::ui
 {
 namespace
@@ -47,6 +49,7 @@ void draw_build_panel(AppController& app, OverlayState& state)
     }
 
     const auto current_index = app.selected_character();
+    ImGui::SetNextItemWidth(280.0f);
     if (ImGui::BeginCombo("Personagem", party.characters[current_index].name.c_str()))
     {
         for (std::size_t i = 0; i < party.characters.size(); ++i)
@@ -60,6 +63,7 @@ void draw_build_panel(AppController& app, OverlayState& state)
     }
 
     const auto* skill = app.data().find_skill(app.selected_skill());
+    ImGui::SetNextItemWidth(280.0f);
     if (ImGui::BeginCombo("Skill", skill != nullptr ? skill->name.c_str() : "(nenhuma)"))
     {
         for (const auto& option : app.data().skills())
@@ -73,6 +77,7 @@ void draw_build_panel(AppController& app, OverlayState& state)
     }
 
     const auto* enemy = app.data().find_enemy(app.selected_enemy());
+    ImGui::SetNextItemWidth(280.0f);
     if (ImGui::BeginCombo("Alvo", enemy != nullptr ? enemy->name.c_str() : "(generico)"))
     {
         for (const auto& option : app.data().enemies())
@@ -86,12 +91,12 @@ void draw_build_panel(AppController& app, OverlayState& state)
     }
 
     bool broken = app.target_broken();
-    if (ImGui::Checkbox("Alvo em break", &broken))
+    if (theme::checkbox("Alvo em break", &broken))
     {
         app.set_target_broken(broken);
     }
 
-    ImGui::Separator();
+    theme::rule();
 
     const auto damage = app.current_damage();
     if (!damage)
@@ -100,18 +105,22 @@ void draw_build_panel(AppController& app, OverlayState& state)
         return;
     }
 
-    ImGui::Text("Dano esperado: %.0f", damage->expected());
+    theme::heading("Dano esperado");
+    ImGui::SameLine();
+    theme::push_display_font();
+    theme::text_value(damage->expected(), "%.0f");
+    theme::pop_font();
     ImGui::SameLine();
     ImGui::TextDisabled("(min %.0f / crit %.0f)", damage->minimum(), damage->maximum());
 
-    ImGui::Checkbox("Mostrar breakdown", &state.show_breakdown);
+    theme::checkbox("Mostrar breakdown", &state.show_breakdown);
     if (state.show_breakdown)
     {
         draw_breakdown(*damage);
     }
 
-    ImGui::Separator();
-    if (ImGui::Button("Copiar build como texto"))
+    theme::rule();
+    if (theme::button("Copiar build como texto"))
     {
         ImGui::SetClipboardText(app.export_build_text().c_str());
     }

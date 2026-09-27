@@ -7,7 +7,10 @@
 //   xmake build harness && xmake run harness
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
+#include <cstdlib>
+#include <vector>
 #include <filesystem>
 #include <memory>
 #include <string>
@@ -26,6 +29,8 @@
 #include "Core/AppController.hpp"
 #include "Support/Log.hpp"
 #include "UI/Panels.hpp"
+#include "Screenshot.hpp"
+#include "UI/Theme.hpp"
 
 namespace
 {
@@ -142,8 +147,32 @@ void draw_game_stub(e33::AppController& app, e33::MockPartySource& source,
 }
 } // namespace
 
-int main()
+// --shot <arquivo.bmp> [--frames N] [--demo]
+// Renderiza N quadros, grava o framebuffer e sai. Serve para gerar a imagem do
+// README sem depender do foco de janela.
+int main(int argc, char** argv)
 {
+    std::string shot_path;
+    int shot_frame = 30;
+    bool demo = false;
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+        if (arg == "--shot" && i + 1 < argc)
+        {
+            shot_path = argv[++i];
+        }
+        else if (arg == "--frames" && i + 1 < argc)
+        {
+            shot_frame = std::atoi(argv[++i]);
+        }
+        else if (arg == "--demo")
+        {
+            demo = true;
+        }
+    }
+    const bool shot_mode = !shot_path.empty();
+
     if (glfwInit() == 0)
     {
         std::fprintf(stderr, "glfwInit falhou\n");
@@ -154,8 +183,10 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
-    GLFWwindow* window = glfwCreateWindow(1440, 900, "Picto Optimizer — harness", nullptr,
-                                          nullptr);
+    // Em modo captura a janela encosta no overlay: a imagem do README tem de
+    // mostrar o mod, não a moldura do harness em volta dele.
+    GLFWwindow* window = glfwCreateWindow(shot_mode ? 900 : 1440, shot_mode ? 760 : 900,
+                                          "Picto Optimizer — harness", nullptr, nullptr);
     if (window == nullptr)
     {
         std::fprintf(stderr, "glfwCreateWindow falhou\n");
@@ -167,7 +198,10 @@ int main()
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGui::StyleColorsDark();
+    // Mesmo estilo e mesma fonte que o mod usa em jogo. O harness só serve
+    // para julgar a aparência se for exatamente a mesma configuração.
+    e33::ui::theme::apply_style();
+    e33::ui::theme::load_fonts("assets");
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 150");
 
@@ -186,6 +220,18 @@ int main()
     e33::ui::OverlayState overlay;
     overlay.open = true;
 
+    if (demo)
+    {
+        // Estado de vitrine: uma skill elemental contra o alvo que tem a
+        // fraqueza correspondente, para a imagem mostrar o breakdown cheio em
+        // vez de uma coluna de multiplicadores em 1.000.
+        app.select_skill("sk_brasier");
+        app.select_enemy("en_sirene");
+        app.set_target_broken(true);
+    }
+
+    int frame = 0;
+
     while (glfwWindowShouldClose(window) == 0)
     {
         glfwPollEvents();
@@ -195,7 +241,10 @@ int main()
 
         app.tick(glfwGetTime());
         e33::ui::draw_overlay(app, overlay);
-        draw_game_stub(app, *source, party);
+        if (!shot_mode)
+        {
+            draw_game_stub(app, *source, party);
+        }
 
         if (!overlay.open)
         {
@@ -212,9 +261,22 @@ int main()
         int height = 0;
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
-        glClearColor(0.09f, 0.09f, 0.11f, 1.0f);
+        glClearColor(0.03f, 0.028f, 0.025f, 1.0f); // obsidiana, como o fundo do jogo
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        if (shot_mode && ++frame >= shot_frame)
+        {
+            std::vector<std::uint8_t> pixels(
+                static_cast<std::size_t>(width) * static_cast<std::size_t>(height) * 4u);
+            glPixelStorei(GL_PACK_ALIGNMENT, 1);
+            glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+            if (e33::harness::write_bmp(shot_path, width, height, pixels))
+            {
+                std::printf("screenshot: %s (%dx%d)\n", shot_path.c_str(), width, height);
+            }
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+        }
+
         glfwSwapBuffers(window);
     }
 

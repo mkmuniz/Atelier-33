@@ -2,6 +2,8 @@
 
 #include <imgui.h>
 
+#include "UI/Theme.hpp"
+
 namespace e33::ui
 {
 void draw_optimize_panel(AppController& app, OverlayState& state)
@@ -15,7 +17,7 @@ void draw_optimize_panel(AppController& app, OverlayState& state)
         // separacao nao serve de nada para quem esta olhando.
         ImGui::ProgressBar(static_cast<float>(job.progress()), ImVec2{-120.0f, 0.0f});
         ImGui::SameLine();
-        if (ImGui::Button("Cancelar"))
+        if (theme::button("Cancelar"))
         {
             app.cancel_optimization();
         }
@@ -23,19 +25,19 @@ void draw_optimize_panel(AppController& app, OverlayState& state)
     }
     else
     {
-        if (ImGui::Button("Otimizar"))
+        if (theme::button("Otimizar"))
         {
             app.start_optimization();
         }
         ImGui::SameLine();
         bool include = app.include_unowned();
-        if (ImGui::Checkbox("Incluir pictos nao obtidos", &include))
+        if (theme::checkbox("Incluir pictos nao obtidos", &include))
         {
             app.set_include_unowned(include);
         }
     }
 
-    ImGui::Separator();
+    theme::rule();
 
     const auto& result = app.last_result();
     if (!result)
@@ -48,20 +50,20 @@ void draw_optimize_panel(AppController& app, OverlayState& state)
     // decide se continua procurando na mao ou se pode parar.
     if (result->exhaustive)
     {
-        ImGui::TextColored(ImVec4{0.55f, 0.85f, 0.6f, 1.0f}, "Otimo provado");
+        ImGui::TextColored(theme::color::kVerdigris, "Otimo provado");
     }
     else if (result->cancelled)
     {
-        ImGui::TextColored(ImVec4{1.0f, 0.75f, 0.3f, 1.0f}, "Cancelada — melhor parcial");
+        ImGui::TextColored(theme::color::kGold, "Cancelada — melhor parcial");
     }
     else if (result->node_limit_hit)
     {
-        ImGui::TextColored(ImVec4{1.0f, 0.75f, 0.3f, 1.0f},
+        ImGui::TextColored(theme::color::kGold,
                            "Parou no teto de busca — melhor encontrado, nao provado otimo");
     }
     else
     {
-        ImGui::TextColored(ImVec4{1.0f, 0.75f, 0.3f, 1.0f},
+        ImGui::TextColored(theme::color::kGold,
                            "Busca aproximada — melhor encontrado");
     }
     ImGui::TextDisabled("%zu avaliadas, %zu podadas, %zu candidatos apos dominancia",
@@ -109,8 +111,8 @@ void draw_optimize_panel(AppController& app, OverlayState& state)
                                    ? (candidate.expected_damage - current_damage)
                                          / current_damage * 100.0
                                    : 0.0;
-            ImGui::TextColored(delta >= 0.0 ? ImVec4{0.55f, 0.85f, 0.6f, 1.0f}
-                                            : ImVec4{1.0f, 0.55f, 0.55f, 1.0f},
+            ImGui::TextColored(delta >= 0.0 ? theme::color::kVerdigris
+                                            : theme::color::kBlood,
                                "%+.1f%%", delta);
 
             ImGui::TableNextColumn();

@@ -1,24 +1,21 @@
-# xmake
-build/
-.xmake/
-
-# MSVC
-*.obj
-*.pdb
-*.ilk
-*.exp
-*.lib
-*.dll
-.vs/
-
-# Node
-node_modules/
-
-# ImGui persiste posicao/tamanho da janela aqui
-imgui.ini
 
 # Dump do FModel: grande, versionado fora do git
-dump/
-
+# ImGui persiste posicao/tamanho da janela aqui
+# MSVC
+# Node
 # macOS
+# xmake
+*.dll
+*.exp
+*.ilk
+*.lib
+*.obj
+*.pdb
 .DS_Store
+.vs/
+.xmake/
+build/
+dump/
+external/
+imgui.ini
+node_modules/

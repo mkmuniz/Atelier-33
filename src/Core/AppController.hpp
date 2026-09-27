@@ -44,6 +44,7 @@ public:
     [[nodiscard]] const GameData::LoadReport& load_report() const { return m_load_report; }
     [[nodiscard]] const PartySnapshot& party() const { return m_party; }
     [[nodiscard]] const std::string& status_line() const { return m_status; }
+    [[nodiscard]] const std::filesystem::path& mod_dir() const { return m_mod_dir; }
     [[nodiscard]] opt::Job& job() { return m_job; }
     [[nodiscard]] const calc::FormulaCoefficients& coefficients() const { return m_coefficients; }
 
@@ -90,6 +91,7 @@ private:
     std::string m_selected_skill{};
     std::string m_selected_enemy{};
     bool m_target_broken{false};
+    std::filesystem::path m_mod_dir{};
     double m_last_poll{-1.0};
     std::string m_status{};
 };

@@ -30,6 +30,7 @@ AppController::AppController(std::unique_ptr<IPartySource> party)
 
 void AppController::initialize(const std::filesystem::path& mod_dir)
 {
+    m_mod_dir = mod_dir;
     m_settings.load(mod_dir / "settings.json");
     log::set_verbose(m_settings.verbose_log);
 

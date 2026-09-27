@@ -7,6 +7,7 @@
 #include "Game/ReadParty.hpp"
 #include "Support/Log.hpp"
 #include "UI/Panels.hpp"
+#include "UI/Theme.hpp"
 
 #if defined(_WIN32)
 #include <Windows.h>
@@ -102,6 +103,27 @@ void PictoOptimizerMod::render()
     {
         return;
     }
+
+    ensure_theme();
     ui::draw_overlay(*m_app, m_overlay);
+}
+
+void PictoOptimizerMod::ensure_theme()
+{
+    if (m_theme_applied)
+    {
+        return;
+    }
+    m_theme_applied = true;
+    ui::theme::apply_style();
+
+    // TODO(verificar no PC): carregar fonte adiciona ao atlas do ImGui, e o
+    // atlas aqui e do UE4SS. Se travar ou a fonte nao aparecer, a chamada
+    // precisa migrar para um callback que rode ANTES do NewFrame. O overlay
+    // funciona com a fonte padrao de qualquer forma.
+    if (!ui::theme::load_fonts(m_app->mod_dir() / "assets"))
+    {
+        log::warn("fonte propria nao carregada; o overlay usa a fonte padrao");
+    }
 }
 } // namespace e33

@@ -4,9 +4,12 @@ In-game overlay for **Clair Obscur: Expedition 33**: reads your live build and
 searches for a better picto and lumina combination. UE4SS C++ mod with a
 draggable ImGui window.
 
-> **Status: pre-alpha.** Not installable yet. The logic, the search and the UI
-> are built and tested; reading the game's memory (M0/M3) and the actual damage
-> calibration (M4) need the game running and are not done.
+![The overlay](docs/images/overlay.png)
+
+> **Status: pre-alpha.** It builds, installs and opens. What it cannot do yet is
+> read your actual build: the memory reads (M0/M3) need the game running. The
+> damage coefficients are also uncalibrated (M4). The formula, the search, the
+> comparison and the overlay are built and tested.
 
 ## Why an overlay and not an external window
 
@@ -34,6 +37,9 @@ one you are looking at.
 
 **Requires** UE4SS in `Expedition 33\Sandfall\Binaries\Win64\`.
 
+Grab `Atelier33.zip` from [Releases](../../releases), or from the artifacts of
+the latest [CI run](../../actions) if you want the current main.
+
 1. Extract `PictoOptimizer` to
    `Expedition 33\Sandfall\Binaries\Win64\ue4ss\Mods\PictoOptimizer\`
 2. Add a `PictoOptimizer : 1` line to `ue4ss\Mods\mods.txt`. The bundled
@@ -44,11 +50,14 @@ one you are looking at.
 
 ## Building
 
-The mod DLL needs Windows, MSVC and a UE4SS checkout:
+The mod DLL is CMake, built alongside RE-UE4SS — that is the flow UE4SS
+supports, and there is no import library to link against from outside:
 
 ```sh
-xmake f --ue4ss=C:/path/to/RE-UE4SS -m release
-xmake build PictoOptimizer
+git clone --recursive https://github.com/UE4SS-RE/RE-UE4SS external/RE-UE4SS
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Game__Shipping__Win64
+cmake --build build
+cmake --build build --target package   # the installable zip
 ```
 
 Everything else builds anywhere, which is how the project is developed
@@ -97,6 +106,21 @@ That split is what lets the entire logic layer build and run on macOS and in CI.
 
 See [docs/DEV-MACOS.md](docs/DEV-MACOS.md) for what runs where.
 
+## Interface
+
+The palette comes from the game's own material library — obsidian, black
+marble, gold — with gold used only as rule, border and highlight, mitred
+corners, letterspaced capitals and diamond fleurons. Text is EB Garamond, a
+French old-style shipped under the OFL: the game's own face is third-party and
+cannot be redistributed in a mod.
+
+The screenshot above is generated, not hand-taken:
+
+```sh
+xmake run harness --shot shot.bmp --frames 40 --demo
+```
+
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE). Bundled font under the SIL OFL 1.1, see
+[assets/fonts/](assets/fonts/).

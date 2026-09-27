@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # A DLL do mod precisa do checkout do UE4SS, que não está disponível aqui.
+  # O CI cobre a camada que o projeto isola de propósito — Calc/, Optimizer/,
+  # Data/ — que é onde os bugs de lógica moram.
+  cpp:
+    name: C++ (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+
+      - name: Cache xmake packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.xmake
+          key: ${{ runner.os }}-xmake-${{ hashFiles('xmake.lua') }}
+
+      - run: xmake f -y -m release
+      - run: xmake build -y tests
+      - run: xmake run tests
+
+      # O plano fixa 3s para uma busca típica. Medir no CI não prova o número do
+      # PC do usuário, mas pega a regressão que transforma segundos em minutos.
+      - run: xmake build -y bench
+      - run: xmake run bench
+
+  tools:
+    name: extraction tooling
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test

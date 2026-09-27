@@ -1,0 +1,8 @@
+{
+  "_note": "Coeficientes NAO calibrados. O M4 ajusta estes numeros contra fixtures de dano medido em jogo, ate o erro medio ficar abaixo de 2%.",
+  "attack_exponent": 1.0,
+  "defense_weight": 1.0,
+  "defense_softness": 300.0,
+  "crit_base": 1.5,
+  "global_scale": 1.0
+}

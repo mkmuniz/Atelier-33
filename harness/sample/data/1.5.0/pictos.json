@@ -1,0 +1,15 @@
+{
+  "_note": "FIXTURE do harness. Ids e numeros INVENTADOS, so para a UI e a busca terem o que mastigar. Os dados reais saem do tools/extract.ts sobre um dump do FModel, no PC.",
+  "pictos": [
+    {"id": "pic_lame", "name": "Lame Affutée", "lumina_cost": 3, "stats": {"attack": 120}},
+    {"id": "pic_oeil", "name": "Oeil Vif", "lumina_cost": 4, "stats": {"crit_rate": 0.28}},
+    {"id": "pic_coeur", "name": "Coeur Ardent", "lumina_cost": 5, "stats": {"attack": 70, "crit_rate": 0.12}},
+    {"id": "pic_flamme", "name": "Flamme", "lumina_cost": 2, "stats": {"element_bonus": {"fire": 0.45}}},
+    {"id": "pic_givre", "name": "Givre", "lumina_cost": 2, "stats": {"element_bonus": {"ice": 0.45}}},
+    {"id": "pic_fureur", "name": "Fureur", "lumina_cost": 6, "stats": {"attack": 90, "crit_damage": 0.35}},
+    {"id": "pic_garde", "name": "Garde", "lumina_cost": 1, "stats": {"defense": 80, "health": 400}},
+    {"id": "pic_eclat", "name": "Éclat", "lumina_cost": 4, "stats": {"damage_bonus": 0.18}},
+    {"id": "pic_precision", "name": "Précision", "lumina_cost": 3, "stats": {"crit_rate": 0.15, "crit_damage": 0.2}},
+    {"id": "pic_rage", "name": "Rage", "lumina_cost": 5, "stats": {"attack": 150, "defense": -40}}
+  ]
+}

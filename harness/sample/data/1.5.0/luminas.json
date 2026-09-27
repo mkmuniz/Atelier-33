@@ -1,0 +1,11 @@
+{
+  "_note": "FIXTURE do harness. Ids INVENTADOS.",
+  "luminas": [
+    {"id": "lum_force", "name": "Force", "cost": 4, "stats": {"damage_bonus": 0.22}},
+    {"id": "lum_precision", "name": "Précision", "cost": 3, "stats": {"crit_damage": 0.4}},
+    {"id": "lum_brasier", "name": "Brasier", "cost": 5, "stats": {"element_bonus": {"fire": 0.35}}},
+    {"id": "lum_celerite", "name": "Célérité", "cost": 2, "stats": {"speed": 30, "crit_rate": 0.08}},
+    {"id": "lum_vigueur", "name": "Vigueur", "cost": 1, "stats": {"health": 300}},
+    {"id": "lum_fureur", "name": "Fureur", "cost": 6, "stats": {"attack": 80, "damage_bonus": 0.1}}
+  ]
+}

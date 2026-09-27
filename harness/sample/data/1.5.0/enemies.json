@@ -1,0 +1,8 @@
+{
+  "_note": "FIXTURE do harness. Ids INVENTADOS.",
+  "enemies": [
+    {"id": "en_sirene", "name": "Sirène", "defense": 320, "weakness": "fire", "weakness_multiplier": 1.6, "break_multiplier": 2.0},
+    {"id": "en_goblu", "name": "Goblu", "defense": 180, "weakness": "ice", "weakness_multiplier": 1.5, "break_multiplier": 1.8},
+    {"id": "en_chevalier", "name": "Chevalier", "defense": 640, "weakness": "none", "break_multiplier": 1.5}
+  ]
+}

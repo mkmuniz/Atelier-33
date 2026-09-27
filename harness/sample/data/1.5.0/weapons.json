@@ -1,0 +1,7 @@
+{
+  "_note": "FIXTURE do harness. Ids INVENTADOS.",
+  "weapons": [
+    {"id": "wep_rapiere", "name": "Rapière", "stats": {"attack": 260, "crit_rate": 0.1}, "element": "none"},
+    {"id": "wep_brulante", "name": "Lame Brûlante", "stats": {"attack": 230}, "element": "fire"}
+  ]
+}

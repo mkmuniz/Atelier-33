@@ -1,0 +1,10 @@
+{
+  "_note": "FIXTURE do harness. Ids INVENTADOS.",
+  "skills": [
+    {"id": "sk_coup", "name": "Coup Simple", "power": 1.0, "element": "none", "hits": 1},
+    {"id": "sk_brasier", "name": "Brasier", "power": 1.8, "element": "fire", "hits": 2},
+    {"id": "sk_rafale", "name": "Rafale", "power": 0.7, "element": "none", "hits": 5},
+    {"id": "sk_givre", "name": "Éclat de Givre", "power": 2.1, "element": "ice", "hits": 1},
+    {"id": "sk_final", "name": "Coup Final", "power": 3.2, "element": "none", "hits": 1, "can_crit": false}
+  ]
+}

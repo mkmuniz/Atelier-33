@@ -42,6 +42,10 @@ struct Options
     // Teto de segurança: acima disso a busca exaustiva vira beam sozinha, em
     // vez de rodar por minutos e o usuário achar que travou.
     std::size_t auto_beam_threshold{400'000};
+    // Teto rígido de nós visitados. A fase das luminas é um subconjunto com
+    // orçamento, e portanto exponencial; sem este teto uma combinação ruim de
+    // orçamento alto e luminas baratas roda por minutos mesmo em beam.
+    std::size_t max_nodes{2'000'000};
 };
 
 struct Result
@@ -52,6 +56,7 @@ struct Result
     std::size_t candidates_after_dominance{0};
     bool exhaustive{false};  // true = ótimo provado; false = beam, pode não ser
     bool cancelled{false};
+    bool node_limit_hit{false};
 };
 
 // Chamado periodicamente com o progresso em 0..1. Devolver false cancela.

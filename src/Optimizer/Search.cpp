@@ -114,7 +114,20 @@ struct Context
     Stats lumina_ceiling{};
     Result result{};
     const ProgressFn* progress{};
+    std::size_t node_budget{0};
     bool cancelled{false};
+
+    // Devolve true quando o orçamento de nós acabou. Marcar em vez de lançar
+    // mantém o melhor resultado já encontrado utilizável.
+    [[nodiscard]] bool out_of_budget()
+    {
+        if (result.evaluated + result.pruned_by_bound < node_budget)
+        {
+            return false;
+        }
+        result.node_limit_hit = true;
+        return true;
+    }
 
     [[nodiscard]] double damage_of(const Stats& stats) const
     {
@@ -129,7 +142,7 @@ struct Context
 void search_luminas(Context& ctx, const std::vector<const Picto*>& pictos, const Stats& stats,
                     std::vector<const Lumina*>& chosen, int spent, std::size_t start)
 {
-    if (ctx.cancelled)
+    if (ctx.cancelled || ctx.out_of_budget())
     {
         return;
     }
@@ -172,7 +185,7 @@ void search_luminas(Context& ctx, const std::vector<const Picto*>& pictos, const
 void search_pictos(Context& ctx, std::vector<const Picto*>& chosen, const Stats& stats,
                    std::size_t start, int remaining_slots)
 {
-    if (ctx.cancelled)
+    if (ctx.cancelled || ctx.out_of_budget())
     {
         return;
     }
@@ -320,12 +333,30 @@ Result search(const Request& request, const Options& options, const ProgressFn& 
 {
     Context ctx{.request = &request, .top = TopN{options.top_n}};
     ctx.progress = &progress;
+    ctx.node_budget = std::max<std::size_t>(options.max_nodes, 1);
 
     ctx.base = request.base_stats;
     ctx.base += calc::accumulate(request.buffs);
 
     ctx.picto_pool = prune_dominated(request.pictos, request.include_unowned);
     ctx.lumina_pool = prune_dominated(request.luminas, request.include_unowned);
+
+    // Best-first: o bound só corta ramos depois de existir um bom resultado, e
+    // quem dá um bom resultado cedo é o item mais promissor. Sem esta ordenação
+    // a busca desce primeiro nos itens ruins, o bound não corta nada e o
+    // branch and bound degenera para enumeração completa.
+    const auto marginal = [&ctx](const Stats& item) {
+        return ctx.damage_of(ctx.base + item) - ctx.damage_of(ctx.base);
+    };
+    std::ranges::sort(ctx.picto_pool, std::greater{},
+                      [&marginal](const Picto* p) { return marginal(p->stats); });
+    // Luminas competem por orçamento, então o que ordena é densidade: ganho por
+    // ponto gasto. Custo zero vai na frente, porque é ganho de graça.
+    std::ranges::sort(ctx.lumina_pool, std::greater{}, [&marginal](const Lumina* l) {
+        const auto gain = marginal(l->stats);
+        return l->cost > 0 ? gain / static_cast<double>(l->cost)
+                           : std::numeric_limits<double>::max();
+    });
     ctx.result.candidates_after_dominance = ctx.picto_pool.size() + ctx.lumina_pool.size();
     ctx.lumina_ceiling = optimistic_remainder<Lumina>(
         ctx.lumina_pool, 0,
@@ -350,7 +381,7 @@ Result search(const Request& request, const Options& options, const ProgressFn& 
     {
         std::vector<const Picto*> chosen;
         search_pictos(ctx, chosen, ctx.base, 0, request.picto_slots);
-        ctx.result.exhaustive = !ctx.cancelled;
+        ctx.result.exhaustive = !ctx.cancelled && !ctx.result.node_limit_hit;
     }
 
     ctx.result.cancelled = ctx.cancelled;

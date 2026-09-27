@@ -1,0 +1,65 @@
+{
+  "_note": "Mapeamento de colunas do dump do FModel para o schema do mod. Quando um patch renomeia uma coluna, e este arquivo que muda — nao o codigo. `source` e o nome do arquivo exportado pelo FModel (sem .json); `columns` mapeia campo do mod -> nome da propriedade no dump.",
+  "version": "1.5.0",
+  "tables": {
+    "pictos": {
+      "source": "DT_jRPG_Pictos",
+      "required": ["name", "lumina_cost"],
+      "columns": {
+        "name": "DisplayName",
+        "lumina_cost": "LuminaCost",
+        "stats.attack": "BonusAttack",
+        "stats.defense": "BonusDefense",
+        "stats.health": "BonusHealth",
+        "stats.speed": "BonusSpeed",
+        "stats.crit_rate": "BonusCritChance",
+        "stats.crit_damage": "BonusCritDamage",
+        "stats.damage_bonus": "BonusDamage"
+      }
+    },
+    "luminas": {
+      "source": "DT_jRPG_Luminas",
+      "required": ["name", "cost"],
+      "columns": {
+        "name": "DisplayName",
+        "cost": "LuminaCost",
+        "stats.attack": "BonusAttack",
+        "stats.crit_rate": "BonusCritChance",
+        "stats.crit_damage": "BonusCritDamage",
+        "stats.damage_bonus": "BonusDamage"
+      }
+    },
+    "weapons": {
+      "source": "DT_jRPG_Weapons",
+      "required": ["name"],
+      "columns": {
+        "name": "DisplayName",
+        "element": "Element",
+        "stats.attack": "BaseAttack",
+        "stats.crit_rate": "BaseCritChance"
+      }
+    },
+    "skills": {
+      "source": "DT_jRPG_Skills",
+      "required": ["name", "power"],
+      "columns": {
+        "name": "DisplayName",
+        "power": "DamageMultiplier",
+        "element": "Element",
+        "hits": "HitCount",
+        "can_crit": "CanCrit"
+      }
+    },
+    "enemies": {
+      "source": "DT_jRPG_Enemies",
+      "required": ["name"],
+      "columns": {
+        "name": "DisplayName",
+        "defense": "BaseDefense",
+        "weakness": "ElementalWeakness",
+        "weakness_multiplier": "WeaknessMultiplier",
+        "break_multiplier": "BreakMultiplier"
+      }
+    }
+  }
+}

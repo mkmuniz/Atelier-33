@@ -5,6 +5,7 @@
   "description": "Data extraction tooling for E33 Picto Optimizer (runs anywhere, incl. macOS)",
   "scripts": {
     "extract": "tsx tools/extract.ts",
+    "test": "node --import tsx --test tools/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

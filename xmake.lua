@@ -30,6 +30,8 @@ option_end()
 local core_files = {
     "src/Support/*.cpp",
     "src/Model/*.cpp",
+    "src/Config/*.cpp",
+    "src/Core/*.cpp",
     "src/Data/*.cpp",
     "src/Calc/*.cpp",
     "src/Optimizer/*.cpp",

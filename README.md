@@ -36,7 +36,8 @@ one you are looking at.
 
 1. Extract `PictoOptimizer` to
    `Expedition 33\Sandfall\Binaries\Win64\ue4ss\Mods\PictoOptimizer\`
-2. Confirm `enabled.txt` exists inside the folder.
+2. Add a `PictoOptimizer : 1` line to `ue4ss\Mods\mods.txt`. The bundled
+   `enabled.txt` also works, but it bypasses mods.txt and gives up load ordering.
 3. Start the game and press **F8**.
 
 `J` is avoided on purpose — Gramophone Everywhere uses it.
